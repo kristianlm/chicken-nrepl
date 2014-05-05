@@ -9,8 +9,8 @@
 
 (define (grepl-loop in-port out-port)
 
-  (define (repl-prompt op)
-    (display "@> " op)
+  (define (print-repl-prompt op)
+    (display "#;> " op)
     (flush-output op))
 
   ;; stolen from Chicken Core's eval.scm
@@ -28,7 +28,7 @@
     (handle-exceptions root-exn
       #f ;; <-- returns from repl-prompt
 
-      (repl-prompt out-port)
+      (print-repl-prompt out-port)
       (handle-exceptions exn
         (begin (print-error-message exn out-port)
                (print-call-chain out-port 4)
