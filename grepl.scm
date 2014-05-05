@@ -52,7 +52,7 @@
                 (loop))))))))
 
 ;; blocking repl, spawns new threads on incomming connections
-(define (make-grepl port #!optional (spawn! thread-start!))
+(define (grepl port #!optional (spawn! thread-start!))
   (define socket (tcp-listen port))
 
   (let loop ()
