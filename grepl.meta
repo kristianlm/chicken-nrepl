@@ -1,0 +1,6 @@
+;; -*- scheme -*-
+
+((author "Kristian Lein-Mathisen")
+ (license "BSD")
+ (test-depends test)
+ (category debugging))
