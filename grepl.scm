@@ -17,6 +17,8 @@
   (define (write-results xs port)
     (cond ((null? xs)
            (##sys#print "; no values\n" #f port))
+          ((eq? (void) (car xs)) ;; <-- don't print #<unspecified>
+           (##sys#write-char-0 #\newline port))
           (else
            (for-each (cut ##sys#repl-print-hook <> port) xs)
            (when (pair? (cdr xs))
