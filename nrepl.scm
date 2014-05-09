@@ -7,7 +7,7 @@
     (condition-case (read port)
                     ((exn i/o net timeout) (loop)))))
 
-(define (grepl-loop in-port out-port)
+(define (nrepl-loop in-port out-port)
 
   (define (print-repl-prompt op)
     (display "#;> " op)
@@ -52,7 +52,7 @@
                 (loop))))))))
 
 ;; blocking repl, spawns new threads on incomming connections
-(define (grepl port #!optional (spawn! thread-start!))
+(define (nrepl port #!optional (spawn! thread-start!))
   (define socket (tcp-listen port))
 
   (let loop ()
@@ -60,5 +60,5 @@
       ;; TODO: use these values somehow
       (let-values (((local-adr  remote-adr)  (tcp-addresses in))
                    ((local-port remote-port) (tcp-port-numbers in)))
-        (spawn! (lambda () (grepl-loop in out)))))
+        (spawn! (lambda () (nrepl-loop in out)))))
     (loop)))

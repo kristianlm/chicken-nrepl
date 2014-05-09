@@ -1,0 +1,6 @@
+;; -*- scheme -*-
+
+(compile -s nrepl-module.scm -o nrepl.so -J)
+(compile -s nrepl.import.scm)
+
+(install-extension 'nrepl '("nrepl.so" "nrepl.import.so"))

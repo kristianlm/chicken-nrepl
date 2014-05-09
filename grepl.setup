@@ -1,6 +1,0 @@
-;; -*- scheme -*-
-
-(compile -s grepl-module.scm -o grepl.so -J)
-(compile -s grepl.import.scm)
-
-(install-extension 'grepl '("grepl.so" "grepl.import.so"))
