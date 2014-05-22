@@ -60,5 +60,9 @@
       ;; TODO: use these values somehow
       (let-values (((local-adr  remote-adr)  (tcp-addresses in))
                    ((local-port remote-port) (tcp-port-numbers in)))
-        (spawn! (lambda () (nrepl-loop in out)))))
+        (spawn! (lambda ()
+                  (display ";; nrepl on " out)
+                  (display (argv) out)
+                  (display "\n" out)
+                  (nrepl-loop in out)))))
     (loop)))
