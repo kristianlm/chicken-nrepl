@@ -1,4 +1,5 @@
 (use srfi-18 ;; threads
+     ports
      tcp)
 
 ;; like read but catches socket timeouts and retries
