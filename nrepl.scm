@@ -11,7 +11,7 @@
 (define (nrepl-loop in-port out-port)
 
   (define (print-repl-prompt op)
-    (display "#;> " op)
+    (display ((repl-prompt)) op)
     (flush-output op))
 
   ;; stolen from Chicken Core's eval.scm
