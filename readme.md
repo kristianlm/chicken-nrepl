@@ -1,6 +1,6 @@
 # NREPL
 
-An blocking networked REPL for Chicken Scheme. Each new incoming
+A blocking networked REPL for Chicken Scheme. Each new incoming
 connection runs in a new srfi-18 thread.
 
 ## Requirements
