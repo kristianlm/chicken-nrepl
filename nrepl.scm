@@ -53,17 +53,17 @@
                 (loop))))))))
 
 ;; blocking repl, spawns new threads on incomming connections
-(define (nrepl port #!optional (spawn! thread-start!))
+(define (nrepl port #!optional
+               (spawn! (lambda (in out)
+                         (thread-start!
+                          (lambda ()
+                            (display ";; nrepl on " out)
+                            (display (argv) out)
+                            (display "\n" out)
+                            (nrepl-loop in out)))
+                         #t)))
   (define socket (tcp-listen port))
-
   (let loop ()
     (let-values (((in out) (tcp-accept socket))) ;; <-- blocks
-      ;; TODO: use these values somehow
-      (let-values (((local-adr  remote-adr)  (tcp-addresses in))
-                   ((local-port remote-port) (tcp-port-numbers in)))
-        (spawn! (lambda ()
-                  (display ";; nrepl on " out)
-                  (display (argv) out)
-                  (display "\n" out)
-                  (nrepl-loop in out)))))
-    (loop)))
+      (if (spawn! in out)
+          (loop)))))
