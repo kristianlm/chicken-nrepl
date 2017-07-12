@@ -1,5 +1,5 @@
   [spiffy]: http://api.call-cc.org/doc/spiffy
-  [emacs]: https://www.gnu.org/software/emacs/
+  [Emacs]: https://www.gnu.org/software/emacs/
   [rlwrap]: http://freecode.com/projects/rlwrap
   [modules]: http://api.call-cc.org/doc/chicken/modules
 # NREPL
