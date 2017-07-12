@@ -1,6 +1,6 @@
 (use srfi-18 ;; threads
-     ports
-     tcp)
+     (only ports with-output-to-port with-error-output-to-port)
+     (only tcp tcp-listen tcp-accept))
 
 ;; like read but catches socket timeouts and retries
 (define (read* port)

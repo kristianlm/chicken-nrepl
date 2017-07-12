@@ -1,4 +1,4 @@
 (module nrepl (nrepl nrepl-loop)
-(import scheme chicken srfi-1 ports)
+(import scheme chicken)
 (include "nrepl.scm")
 )
