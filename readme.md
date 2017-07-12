@@ -130,6 +130,51 @@ work-flow. If you write your app in a REPL-friendly way like this, you
 can modify you program behaviour on-the-fly from the REPL and never
 have to restart your process and lose its state.
 
+### Example CPU-intensive main thread
+
+`nrepl` can be used for live-coding interactive application such as
+games. Adding `(thread-start! (lambda () (nrepl 1234)))` usually Just
+Works, where you can redefine top-level function and game state
+on-the-fly.
+
+However, if the game-loop is eating up a lot of scheduler-time, you
+may find that your REPL becomes unresponsive. A good way to fix this
+is to wrap both the REPL and the game-loop in a mutex. This has
+another advantage in that it will ensure your REPL will not interfere
+with game-state (or OpenGL state) during game-loop iteration.
+
+```scheme
+;;; wrapping nrepl eval in a mutex for responsiveness
+;;; and game-loop thread-safety. running this and then doing:
+;;;     echo '(thread-sleep! 1)' | rlwrap nc localhost 1234
+;;; should pause the game-loop for 1 second
+(use nrepl)
+
+(define with-main-mutex
+  (let ((main-mutex (make-mutex)))
+    (lambda (proc)
+      (dynamic-wind (lambda () (mutex-lock! main-mutex))
+                    proc
+                    (lambda () (mutex-unlock! main-mutex))))))
+
+(thread-start!
+ (lambda ()
+   (nrepl 1234
+          (lambda (i o)
+            (thread-start!
+             (lambda ()
+               (nrepl-loop
+                i o (lambda (x) (with-main-mutex (lambda () (eval x)))))))))))
+
+(define (game-step)
+  (print* "\r"  (current-milliseconds) "   ")
+  (thread-sleep! 0.05))
+
+(let loop ()
+  (with-main-mutex game-step)
+  (loop))
+```
+
 ### `nrepl` in compiled code
 
 `nrepl` also works inside a compiled program. However, sometimes

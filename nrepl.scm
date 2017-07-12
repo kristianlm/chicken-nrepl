@@ -8,7 +8,7 @@
     (condition-case (read port)
                     ((exn i/o net timeout) (loop)))))
 
-(define (nrepl-loop in-port out-port)
+(define (nrepl-loop in-port out-port #!optional (eval eval) (read read*))
 
   (define (print-repl-prompt op)
     (display ((repl-prompt)) op)
@@ -37,7 +37,7 @@
                (print-call-chain out-port 4)
                (loop))
         ;; reading from in-port will probably yield:
-        (let ([sexp (read* in-port)])
+        (let ([sexp (read in-port)])
           ;; eof, exit repl loop
           (if (not (eof-object? sexp))
               (begin
