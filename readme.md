@@ -42,6 +42,13 @@ You can use `spawn`, for example, for authentication:
 `nrepl` will loop for accepting incomming connections unless `spawn`
 returns `#f`.
 
+    [procedure] (nrepl-loop in out [eval [read]])
+
+Start a standard REPL-loop: print the prompt, read an s-expression
+from `in`, evaluate the expression, print the result to `out` and
+repeat forever. This can be used inside the optionally supplied
+`spawn`-procedure above.
+
 ## Practical use
 
 Any source-code you send down a `nrepl` session will not be persisted
