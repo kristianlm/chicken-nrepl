@@ -1,64 +1,57 @@
 (use srfi-18 ;; threads
-     (only ports with-output-to-port with-error-output-to-port)
      (only tcp tcp-listen tcp-accept tcp-read-timeout))
 
-(define (nrepl-loop in-port out-port #!optional (eval eval) (read read))
+(define (nrepl-loop #!key (eval eval) (read read) (print print) (writeln (lambda (x) (##sys#repl-print-hook x (current-output-port)))))
 
-  (define (print-repl-prompt op)
-    (display ((repl-prompt)) op)
-    (flush-output op))
+  (define (print-repl-prompt)
+    (display ((repl-prompt)))
+    (flush-output))
 
   ;; stolen from Chicken Core's eval.scm
-  (define (write-results xs port)
+  (define (write-results xs)
     (cond ((null? xs)
-           (##sys#print "; no values\n" #f port))
+           (print "; no values\n"))
           ((eq? (void) (car xs)) ;; <-- don't print #<unspecified>
-           (##sys#write-char-0 #\newline port))
+           (newline))
           (else
-           (for-each (cut ##sys#repl-print-hook <> port) xs)
+           (for-each writeln xs)
            (when (pair? (cdr xs))
-             (##sys#print
-              (string-append "; " (##sys#number->string (length xs)) " values\n")
-              #f port)))))
+             (print "; " (length xs) " values\n")))))
 
   (let loop ()
     (handle-exceptions root-exn
       #f ;; <-- returns from repl-prompt
 
-      (print-repl-prompt out-port)
+      (print-repl-prompt)
       (handle-exceptions exn
-        (begin (print-error-message exn out-port)
-               (print-call-chain out-port 4)
+        (begin (print-error-message exn (current-error-port))
+               (print-call-chain (current-error-port) 4)
                (loop))
-        ;; reading from in-port will probably yield:
-        (let ([sexp (read in-port)])
+
+        (let ([sexp (read)])
           ;; eof, exit repl loop
           (if (not (eof-object? sexp))
               (begin
-                (with-output-to-port out-port
-                  (lambda ()
-                    (with-error-output-to-port
-                     out-port
-                     (lambda ()
-                       (receive result (eval sexp)
-                         (if (eq? (void) result)
-                             (void) ;; don't print unspecified's
-                             (write-results result out-port)))))))
+                (receive result (eval sexp)
+                  (if (eq? (void) result)
+                      (void) ;; don't print unspecified's
+                      (write-results result)))
                 (loop))))))))
 
 ;; blocking repl, spawns new threads on incomming connections
 (define (nrepl port #!optional
-               (spawn! (lambda (in out)
+               (spawn! (lambda ()
                          (thread-start!
                           (lambda ()
-                            (display ";; nrepl on " out)
-                            (display (argv) out)
-                            (display "\n" out)
-                            (nrepl-loop in out)))
+                            (print ";; nrepl on " argv)
+                            (nrepl-loop)))
                          #t)))
   (define socket (tcp-listen port))
   (let loop ()
     (let-values (((in out) (tcp-accept socket))) ;; <-- blocks
-      (parameterize ((tcp-read-timeout #f))
-        (if (spawn! in out)
+      (parameterize ((tcp-read-timeout #f)
+                     (current-input-port in)
+                     (current-output-port out)
+                     (current-error-port out))
+        (if (spawn!)
             (loop))))))
