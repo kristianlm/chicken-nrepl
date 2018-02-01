@@ -1,14 +1,8 @@
 (use srfi-18 ;; threads
      (only ports with-output-to-port with-error-output-to-port)
-     (only tcp tcp-listen tcp-accept))
+     (only tcp tcp-listen tcp-accept tcp-read-timeout))
 
-;; like read but catches socket timeouts and retries
-(define (read* port)
-  (let loop ()
-    (condition-case (read port)
-                    ((exn i/o net timeout) (loop)))))
-
-(define (nrepl-loop in-port out-port #!optional (eval eval) (read read*))
+(define (nrepl-loop in-port out-port #!optional (eval eval) (read read))
 
   (define (print-repl-prompt op)
     (display ((repl-prompt)) op)
@@ -65,5 +59,6 @@
   (define socket (tcp-listen port))
   (let loop ()
     (let-values (((in out) (tcp-accept socket))) ;; <-- blocks
-      (if (spawn! in out)
-          (loop)))))
+      (parameterize ((tcp-read-timeout #f))
+        (if (spawn! in out)
+            (loop))))))
