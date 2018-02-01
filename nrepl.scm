@@ -27,7 +27,7 @@
       (print-repl-prompt)
       (handle-exceptions exn
         (begin (print-error-message exn (current-error-port))
-               (print-call-chain (current-error-port) 4)
+               (print-call-chain (current-error-port) 4) ;; remove 4 internal traces
                (loop))
 
         (let ([sexp (read)])
