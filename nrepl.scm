@@ -1,10 +1,12 @@
 (use srfi-18 ;; threads
      (only tcp tcp-listen tcp-accept tcp-read-timeout))
 
+(define nrepl-prompt (make-parameter (lambda () (display ";> "))))
+
 (define (nrepl-loop #!key (eval eval) (read read) (print print) (writeln (lambda (x) (##sys#repl-print-hook x (current-output-port)))))
 
   (define (print-repl-prompt)
-    (display ((repl-prompt)))
+    ((nrepl-prompt))
     (flush-output))
 
   ;; stolen from Chicken Core's eval.scm
