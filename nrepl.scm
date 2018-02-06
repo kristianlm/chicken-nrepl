@@ -3,7 +3,11 @@
 
 (define nrepl-prompt (make-parameter (lambda () (display ";> "))))
 
-(define (nrepl-loop #!key (eval eval) (read read) (print print) (writeln (lambda (x) (##sys#repl-print-hook x (current-output-port)))))
+(define (nrepl-loop #!key
+                    (eval eval)
+                    (read read)
+                    (print print)
+                    (writeln (lambda (x) (##sys#repl-print-hook x (current-output-port)))))
 
   (define (print-repl-prompt)
     ((nrepl-prompt))
