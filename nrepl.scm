@@ -7,6 +7,7 @@
                     (eval eval)
                     (read read)
                     (print print)
+                    ;; repl-print-hook is nice because it limits printout size
                     (writeln (lambda (x) (##sys#repl-print-hook x (current-output-port)))))
 
   (define (print-repl-prompt)
