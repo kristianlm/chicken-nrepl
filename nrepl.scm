@@ -50,7 +50,7 @@
                (spawn! (lambda ()
                          (thread-start!
                           (lambda ()
-                            (print ";; nrepl on " argv)
+                            (print ";; nrepl on " (argv))
                             (nrepl-loop)))
                          #t)))
   (define socket (tcp-listen port))
