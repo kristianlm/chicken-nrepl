@@ -15,39 +15,40 @@ None except the `tcp` and `srfi-18` units from CHICKEN core.
 
     [procedure] (nrepl port [spawn])
 
-Listen to TCP port `port` and (blockingly) wait for incoming
-connections.  `(spawn in out)` is called for each incomming
-connection, where `in` is the input port and `out` is the output port
-for the new TCP session.
+Listen to TCP port `port` number and (blockingly) wait for incoming
+connections.  `(spawn)` is called for each incomming connection
+without arguments where `current-input-port`, `current-output-port`
+and `current-error-port` are bound to the TCP connection.
 
 You can use `spawn`, for example, for authentication:
 
 ```scheme
 (nrepl 1234
-       (lambda (in out)
+       (lambda ()
          (thread-start! ;; otherwise accept-loop will be blocked
           (lambda ()
-            (display ";; please enter an accept token: " out)
-            (define token (read-line in))
+            (display ";; please enter an accept token: ")
+            (define token (read-line))
             (if (equal? token "abc")
-                (nrepl-loop in out)
-                (begin (display ";; access denied\n" out)
-                       (close-input-port in)
-                       (close-output-port out)))))))
+                (nrepl-loop)
+                (begin (print ";; access denied")
+                       (close-input-port (current-input-port))
+                       (close-output-port (current-output-port))
+		       (close-output-port (current-error-port))))))))
 ```
 
-> You can use `(tcp-addresses in)` and `(tcp-port-numbers in)` to find
-> out where the new session is coming from.
+> You can use `tcp-addresses` and `tcp-port-numbers` to find out where
+> the new session is coming from.
 
 `nrepl` will loop for accepting incomming connections unless `spawn`
 returns `#f`.
 
-    [procedure] (nrepl-loop in out [eval [read]])
+    [procedure] (nrepl-loop #!key eval read print writeln)
 
-Start a standard REPL-loop: print the prompt, read an s-expression
-from `in`, evaluate the expression, print the result to `out` and
-repeat forever. This can be used inside the optionally supplied
-`spawn`-procedure above.
+Start a standard REPL-loop: print the prompt, read an s-expression,
+evaluate the expression, print the result and repeat. Exceptions are
+reported and data is flushed. This can be used inside the optionally
+supplied `spawn`-procedure above.
 
 ## Practical use
 
@@ -75,14 +76,14 @@ experience:
 
 `nrepl` plays very nicely with [Emacs]! If you're used to running `M-x
 run-scheme` and sending source-code from buffers into your REPL, an
-`nrepl` endpoint can be used as a Scheme "interpreter". Specify that
-you want to run `nc localhost 1234` for your Scheme interpreter
-instead of the usual `csi`, and you get the functionality you're used
-to.
+`nrepl` endpoint can be used as a Scheme interpreter. You can specify
+that you want to use `nrepl` with a prefix. For example: 
+
+    C-u M-x run-scheme RET nc localhost 1234
 
 Note that telling [Emacs] that `nc localhost 1234` is your Scheme
-interpreter is tricky because `C-u M-x run-scheme` will not let you
-enter spaces. This can be solved by pressing `C-q` before pressing
+interpreter is tricky because `C-u M-x run-scheme` might not let you
+enter spaces. You can enter spaces by pressing `C-q` before pressing
 space.
 
 ### Example HTTP-server work-flow
@@ -167,11 +168,10 @@ with game-state (or OpenGL state) during game-loop iteration.
 (thread-start!
  (lambda ()
    (nrepl 1234
-          (lambda (i o)
+          (lambda ()
             (thread-start!
              (lambda ()
-               (nrepl-loop
-                i o (lambda (x) (with-main-mutex (lambda () (eval x)))))))))))
+               (nrepl-loop eval: (lambda (x) (with-main-mutex (lambda () (eval x)))))))))))
 
 (define (game-step)
   (print* "\r"  (current-milliseconds) "   ")
