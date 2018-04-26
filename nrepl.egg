@@ -1,0 +1,11 @@
+;; -*- scheme -*-
+
+((author "Kristian Lein-Mathisen")
+ (synopsis "Simple networked REPL over TCP")
+ (license "BSD")
+ (test-dependencies test)
+ (dependencies srfi-18)
+ (category debugging)
+ (components
+  (extension nrepl
+	     (source "nrepl-module.scm"))))

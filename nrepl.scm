@@ -1,5 +1,5 @@
-(use srfi-18 ;; threads
-     (only tcp tcp-listen tcp-accept tcp-read-timeout))
+(import srfi-18 ;; threads
+	(only (chicken tcp) tcp-listen tcp-accept tcp-read-timeout))
 
 (define nrepl-prompt (make-parameter (lambda () (display ";> "))))
 

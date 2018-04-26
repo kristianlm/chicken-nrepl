@@ -1,7 +1,0 @@
-;; -*- scheme -*-
-
-((author "Kristian Lein-Mathisen")
- (synopsis "Simple networked REPL over TCP")
- (license "BSD")
- (test-depends test)
- (category debugging))

@@ -1,4 +1,7 @@
 (module nrepl (nrepl nrepl-loop)
-(import scheme chicken)
+(import (scheme)
+	(chicken base)
+	(chicken condition)
+	(chicken process-context))
 (include "nrepl.scm")
 )
