@@ -1,8 +1,4 @@
 ;; -*- scheme -*-
 (repo git    "git://github.com/Adellica/chicken-nrepl.git")
 (uri targz "https://github.com/Adellica/chicken-nrepl/tarball/{egg-release}")
-(release "0.5")
-(release "0.4")
-(release "0.3")
-(release "0.2")
-(release "0.1")
+(release "5.0.5")
