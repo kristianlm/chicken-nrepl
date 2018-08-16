@@ -1,4 +1,5 @@
 (import srfi-18 ;; threads
+        (chicken repl) ;; for ##sys#repl-print-hook when compiled
 	(only (chicken tcp) tcp-listen tcp-accept tcp-read-timeout))
 
 (define nrepl-prompt (make-parameter (lambda () (display ";> "))))
