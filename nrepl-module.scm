@@ -2,6 +2,7 @@
 (import (scheme)
 	(chicken base)
 	(chicken condition)
-	(chicken process-context))
+	(chicken process-context)
+	(chicken repl))
 (include "nrepl.scm")
 )
