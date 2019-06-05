@@ -1,4 +1,4 @@
-(module nrepl (nrepl nrepl-loop)
+(module nrepl (nrepl nrepl-loop nrepl-prompt)
 (import (scheme)
 	(chicken base)
 	(chicken condition)
