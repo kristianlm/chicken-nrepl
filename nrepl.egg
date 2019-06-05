@@ -8,4 +8,5 @@
  (category debugging)
  (components
   (extension nrepl
-	     (source "nrepl-module.scm"))))
+	     (source "nrepl-module.scm")
+             (source-dependencies "nrepl.scm"))))
