@@ -47,19 +47,21 @@
                 (loop))))))))
 
 ;; blocking repl, spawns new threads on incomming connections
-(define (nrepl port #!optional
-               (spawn! (lambda ()
-                         (thread-start!
-                          (lambda ()
-                            (print ";; nrepl on " (argv))
-                            (nrepl-loop)))
-                         #t)))
-  (define socket (tcp-listen port))
+(define (nrepl port #!key
+               (spawn (lambda ()
+                        (thread-start!
+                         (lambda ()
+                           (print ";; nrepl on " (argv))
+                           (nrepl-loop)))
+                        #t))
+               (host #f)
+               (backlog 100))
+  (define socket (tcp-listen port backlog host))
   (let loop ()
     (let-values (((in out) (tcp-accept socket))) ;; <-- blocks
       (parameterize ((tcp-read-timeout #f)
                      (current-input-port in)
                      (current-output-port out)
                      (current-error-port out))
-        (if (spawn!)
+        (if (spawn)
             (loop))))))

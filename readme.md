@@ -4,38 +4,24 @@
   [modules]: http://api.call-cc.org/doc/chicken/modules
 # NREPL
 
-A networked REPL for Chicken Scheme. Each new incoming connection runs
-in a new `srfi-18` thread.
+A networked REPL for Chicken Scheme v5. Each new incoming connection
+runs in a new `srfi-18` thread.
 
 ## Requirements
 
-None except the `tcp` and `srfi-18` units from CHICKEN core.
+- The `srfi-18` egg.
 
 ## API
 
-    [procedure] (nrepl port [spawn])
+    [procedure] (nrepl port #!key host backlog spawn)
 
 Listen to TCP port `port` number and (blockingly) wait for incoming
-connections.  `(spawn)` is called for each incomming connection
+connections. The `host` and `backlog` parameters are passed to
+`tcp-listen`. `(spawn)` is called for each incomming connection
 without arguments where `current-input-port`, `current-output-port`
-and `current-error-port` are bound to the TCP connection.
-
-You can use `spawn`, for example, for authentication:
-
-```scheme
-(nrepl 1234
-       (lambda ()
-         (thread-start! ;; otherwise accept-loop will be blocked
-          (lambda ()
-            (display ";; please enter an accept token: ")
-            (define token (read-line))
-            (if (equal? token "abc")
-                (nrepl-loop)
-                (begin (print ";; access denied")
-                       (close-input-port (current-input-port))
-                       (close-output-port (current-output-port))
-		       (close-output-port (current-error-port))))))))
-```
+and `current-error-port` are bound to the TCP connection. `spawn`
+defaults to creating a new `srfi-18` thread and printing a welcome
+message.
 
 > You can use `tcp-addresses` and `tcp-port-numbers` to find out where
 > the new session is coming from.
