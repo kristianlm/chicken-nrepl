@@ -78,7 +78,7 @@ A real-world use-case for `nrepl` might be something like the
 following. Let's make a simple hello-world HTTP server using [spiffy].
 
 ```scheme
-(use spiffy nrepl)
+(import spiffy nrepl)
 
 (define (app c)
   (send-response body: "hello world\n"))
@@ -103,7 +103,7 @@ What's nice about this is that, since `app` is a top-level variable,
 it can be replaced from the REPL:
 
 ```bash
- ➤ nc localhost 1234
+ ➤ rlwrap nc localhost 1234
 ;; nrepl on (csi -s example.scm)
 #;1> (define (app c) (send-response body: "repl hijack!\n"))
 #;1> ^C
@@ -140,9 +140,9 @@ with game-state (or OpenGL state) during game-loop iteration.
 ```scheme
 ;;; wrapping nrepl eval in a mutex for responsiveness
 ;;; and game-loop thread-safety. running this and then doing:
-;;;     echo '(thread-sleep! 1)' | rlwrap nc localhost 1234
+;;;     echo '(thread-sleep! 1)' | nc localhost 1234
 ;;; should pause the game-loop for 1 second
-(use nrepl)
+(import nrepl srfi-18 chicken.time)
 
 (define with-main-mutex
   (let ((main-mutex (make-mutex)))
@@ -154,10 +154,10 @@ with game-state (or OpenGL state) during game-loop iteration.
 (thread-start!
  (lambda ()
    (nrepl 1234
-          (lambda ()
-            (thread-start!
-             (lambda ()
-               (nrepl-loop eval: (lambda (x) (with-main-mutex (lambda () (eval x)))))))))))
+          #:spawn (lambda ()
+                    (thread-start!
+                     (lambda ()
+                       (nrepl-loop eval: (lambda (x) (with-main-mutex (lambda () (eval x)))))))))))
 
 (define (game-step)
   (print* "\r"  (current-milliseconds) "   ")
