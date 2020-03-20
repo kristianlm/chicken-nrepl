@@ -19,7 +19,8 @@
   (define (write-results xs)
     (cond ((null? xs)
            (print "; no values\n"))
-          ((eq? (void) (car xs)) ;; <-- don't print #<unspecified>
+          ((and (null? (cdr xs))
+                (eq? (void) (car xs))) ;; <-- don't print #<unspecified>
            (newline))
           (else
            (for-each writeln xs)
