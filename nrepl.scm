@@ -16,7 +16,7 @@
     (flush-output))
 
   ;; stolen from Chicken Core's eval.scm
-  (define (write-results xs)
+  (define (write-results . xs)
     (cond ((null? xs)
            (print "; no values\n"))
           ((and (null? (cdr xs))
@@ -38,14 +38,10 @@
                (loop))
 
         (let ([sexp (read)])
-          ;; eof, exit repl loop
-          (if (not (eof-object? sexp))
-              (begin
-                (receive result (eval sexp)
-                  (if (eq? (void) result)
-                      (void) ;; don't print unspecified's
-                      (write-results result)))
-                (loop))))))))
+          (unless (eof-object? sexp)
+            (call-with-values (lambda () (eval sexp))
+              write-results)
+            (loop)))))))
 
 ;; blocking repl, spawns new threads on incomming connections
 (define (nrepl port #!key
