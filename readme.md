@@ -40,9 +40,12 @@ returns `#f`.
     [procedure] (nrepl-loop #!key eval read print writeln)
 
 Start a standard REPL-loop: print the prompt, read an s-expression,
-evaluate the expression, print the result and repeat. Exceptions are
-reported and data is flushed. This can be used inside the optionally
-supplied `spawn`-procedure above.
+evaluate the expression, print the result and repeat. This procedure
+can be used in the optional `spawn`-procedure of `nrepl`.
+
+It reports exceptions, ensures data is flushed and limits the print
+output to avoid flooding your nrepl session (so that `(make-vector
+10000)` is safe).
 
 ## Practical use
 
