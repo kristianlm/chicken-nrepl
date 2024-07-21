@@ -193,11 +193,11 @@ Android example project.
 ## Source code repository
 
 You can find the
-source [here](https://github.com/Adellica/chicken-nrepl).
+source [here](https://github.com/kristianlm/chicken-nrepl).
 
 ## Author
 
-Kristian Lein-Mathisen at [Adellica](https://github.com/Adellica/)
+Kristian Lein-Mathisen
 
 ## License
 
