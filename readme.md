@@ -60,7 +60,7 @@ pleasant. Luckily, [rlwrap] works along `nrepl` to improve this
 experience:
 
 ```bash
- ➤ rlwrap nc localhost 1234
+$ rlwrap nc localhost 1234
 ;; nrepl on (csi -s example.scm)
 #;1> (define (hello) (print "this will be in my history"))
 ```
@@ -105,7 +105,7 @@ following. Let's make a simple hello-world HTTP server using [spiffy].
 Now spiffy runs on port `8080`:
 
 ```bash
- ➤ curl localhost:8080
+$ curl localhost:8080
 hello world
 ```
 
@@ -113,7 +113,7 @@ What's nice about this is that, since `app` is a top-level variable,
 it can be replaced from the REPL:
 
 ```bash
- ➤ rlwrap nc localhost 1234
+$ rlwrap nc localhost 1234
 ;; nrepl on (csi -s example.scm)
 #;1> (define (app c) (send-response body: "repl hijack!\n"))
 #;1> ^C
@@ -122,7 +122,7 @@ it can be replaced from the REPL:
 Now `spiffy` will use our top-level `app` for its proceeding requests:
 
 ```bash
- ➤ curl localhost:8080
+$ curl localhost:8080
 repl hijack!
 ```
 
