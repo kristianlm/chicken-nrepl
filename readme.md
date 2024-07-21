@@ -5,7 +5,8 @@
 # NREPL
 
 A networked REPL for Chicken Scheme v5. Each new incoming connection
-runs in a new `srfi-18` thread.
+runs in a new `srfi-18` thread. Note that `nrepl` is intended to be
+used during development and is insecure by nature.
 
 ## Requirements
 
@@ -15,13 +16,20 @@ runs in a new `srfi-18` thread.
 
     [procedure] (nrepl port #!key host backlog spawn)
 
-Listen to TCP port `port` number and (blockingly) wait for incoming
+Listen to TCP port `port` number and wait for incoming
 connections. The `host` and `backlog` parameters are passed to
-`tcp-listen`. `(spawn)` is called for each incomming connection
-without arguments where `current-input-port`, `current-output-port`
-and `current-error-port` are bound to the TCP connection. `spawn`
-defaults to creating a new `srfi-18` thread and printing a welcome
-message.
+`tcp-listen`.
+
+`host` defaults to `"127.0.0.1"` which will allow incoming connections
+from the local machine only. If you plan on exposing the REPL
+publicly, you can specify `(nrepl 1234 #:port "0.0.0.0")`. Note that
+this has major security drawbacks as a host can easily be compromised
+using a REPL.
+
+`(spawn)` is called for each incomming connection without arguments
+where `current-input-port`, `current-output-port` and
+`current-error-port` are bound to the TCP connection. `spawn` defaults
+to creating a new `srfi-18` thread and printing a welcome message.
 
 > You can use `tcp-addresses` and `tcp-port-numbers` to find out where
 > the new session is coming from.
@@ -57,13 +65,12 @@ experience:
 [rlwrap] will also save your read-line history for the next invokation
 `rlwrap nc localhost 1234` which is handy!
 
-
 ### [Emacs] users
 
 `nrepl` plays very nicely with [Emacs]! If you're used to running `M-x
 run-scheme` and sending source-code from buffers into your REPL, an
 `nrepl` endpoint can be used as a Scheme interpreter. You can specify
-that you want to use `nrepl` with a prefix. For example: 
+that you want to use `nrepl` with a prefix. For example:
 
     C-u M-x run-scheme RET nc localhost 1234
 

@@ -55,7 +55,7 @@
                            (print ";; nrepl on " (argv))
                            (nrepl-loop)))
                         #t))
-               (host #f)
+               (host "127.0.0.1")
                (backlog 100))
   (define socket (tcp-listen port backlog host))
   (let loop ()
