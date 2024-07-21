@@ -2,3 +2,7 @@
 /nrepl.import.so
 /nrepl.so
 /salmonella.log
+/nrepl.build.sh
+/nrepl.install.sh
+/nrepl.link
+/nrepl.static.o
