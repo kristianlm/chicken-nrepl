@@ -1,12 +1,16 @@
   [spiffy]: http://api.call-cc.org/doc/spiffy
   [Emacs]: https://www.gnu.org/software/emacs/
-  [rlwrap]: http://freecode.com/projects/rlwrap
+  [rlwrap]: https://github.com/hanslub42/rlwrap
   [modules]: http://api.call-cc.org/doc/chicken/modules
 # NREPL
 
-A networked REPL for Chicken Scheme v5. Each new incoming connection
-runs in a new `srfi-18` thread. Note that `nrepl` is intended to be
-used during development and is insecure by nature.
+A networked REPL for Chicken Scheme, basically `csi` over a TCP
+socket. `nrepl` is intended to be used during development and is
+insecure by nature.
+
+`nrepl` can be useful when it's complicated to launch your Chicken
+Scheme application, yet you want a REPL available. For [Emacs] users,
+it can replace your usual `run-scheme` interpreter, see below.
 
 ## Requirements
 
@@ -49,38 +53,32 @@ output to avoid flooding your nrepl session (so that `(make-vector
 
 ## Practical use
 
-Any source-code you send down a `nrepl` session will not be persisted
-anywhere.  You can reset your program state by restarting your program
-which may be useful sometimes.
-
-### Terminal users
+### [rlwrap]
 
 Editing code directly from `nc localhost 1234` isn't
 pleasant. Luckily, [rlwrap] works along `nrepl` to improve this
 experience:
 
 ```bash
+$ csi -R nrepl -P '(nrepl 1234)' &
 $ rlwrap nc localhost 1234
-;; nrepl on (csi -s example.scm)
-#;1> (define (hello) (print "this will be in my history"))
+;; nrepl on (csi -R nrepl -P (nrepl 1234))
+#;> (define (hello) (print "this will be in my history"))
 ```
 
 [rlwrap] will also save your read-line history for the next invokation
 `rlwrap nc localhost 1234` which is handy!
 
-### [Emacs] users
+### [Emacs]
 
-`nrepl` plays very nicely with [Emacs]! If you're used to running `M-x
-run-scheme` and sending source-code from buffers into your REPL, an
-`nrepl` endpoint can be used as a Scheme interpreter. You can specify
-that you want to use `nrepl` with a prefix. For example:
+If you're used to running `M-x run-scheme` and sending source-code
+from buffers into your REPL, an `nrepl` endpoint can be used as a
+Scheme interpreter like this:
 
     C-u M-x run-scheme RET nc localhost 1234
 
-Note that telling [Emacs] that `nc localhost 1234` is your Scheme
-interpreter is tricky because `C-u M-x run-scheme` might not let you
-enter spaces. You can enter spaces by pressing `C-q` before pressing
-space.
+> If [Emacs] doesn't let you enter spaces, press `C-q` before pressing
+> space.
 
 ### Example HTTP-server work-flow
 
@@ -88,7 +86,7 @@ A real-world use-case for `nrepl` might be something like the
 following. Let's make a simple hello-world HTTP server using [spiffy].
 
 ```scheme
-(import spiffy nrepl)
+(import nrepl srfi-18 spiffy)
 
 (define (app c)
   (send-response body: "hello world\n"))
@@ -127,7 +125,7 @@ repl hijack!
 ```
 
 Note that `app` must be wrapped in a `lambda` for this to work,
-because the REPL can only replace top-level variable definitions.
+because only top-level symbols can be redefined.
 
 The implications of this can be quite dramatic in terms of
 work-flow. If you write your app in a REPL-friendly way like this, you
@@ -182,13 +180,6 @@ with game-state (or OpenGL state) during game-loop iteration.
 
 `nrepl` also works inside a compiled program. However, sometimes
 [modules] disappear due to compiler optimizations.
-
-### `nrepl` on Android
-
-`nrepl` has been used successfully on Android target hardware for
-remote interactive development.  Check
-out [this](https://github.com/chicken-mobile/chicken-android-template)
-Android example project.
 
 ## Source code repository
 
