@@ -179,7 +179,13 @@ with game-state (or OpenGL state) during game-loop iteration.
 ### `nrepl` in compiled code
 
 `nrepl` also works inside a compiled program. However, sometimes
-[modules] disappear due to compiler optimizations.
+[modules] disappear due to compiler optimizations. Lowering your
+optimization level to `-O1`, for example, can help.
+
+In order to avoid spamming a REPL session with very long prints,
+it's advicable to issue `(set! ##sys#repl-print-length-limit 2048)` 
+somewhere at startup. `csi` does sets this, so it's only necessary
+for compiled code.
 
 ## Source code repository
 
