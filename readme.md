@@ -8,6 +8,9 @@ A networked REPL for Chicken Scheme, basically `csi` over a TCP
 socket. `nrepl` is intended to be used during development and is
 insecure by nature.
 
+> This egg is for CHICKEN 5. For CHICKEN 6, it has been renamed to
+> `tcprepl` and is hosted [here](https://codeberg.org/kristianlm/chicken-tcprepl)
+
 `nrepl` can be useful when it's complicated to launch your Chicken
 Scheme application, yet you want a REPL available. For [Emacs] users,
 it can replace your usual `run-scheme` interpreter, see below.
